@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Pengingat Tugas Siswa</title>
+<style>
+body {
+font-family: 'Segoe UI', sans-serif;
+background-color: #ffe6f0;
+color: #333;
+padding: 20px;
+}
+h2 {
+color: #d63384;
+text-align: center;
+}
+label {
+display: block;
+margin-top: 10px;
+}
+input[type="text"], input[type="date"] {
+width: 100%;
+padding: 8px;
+margin-top: 5px;
+border: 1px solid #ccc;
+border-radius: 8px;
+}
+button {
+background-color: #ff69b4;
+color: white;
+padding: 10px 15px;
+border: none;
+border-radius: 8px;
+margin-top: 15px;
+cursor: pointer;
+}
+button:hover {
+background-color: #e0559e;
+}
+table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 25px;
+background-color: white;
+border-radius: 10px;
+overflow: hidden;
+}
+th, td {
+padding: 10px;
+border-bottom: 1px solid #ddd;
+text-align: left;
+}
+th {
+background-color: #ffc0cb;
+}
+.selesai {
+text-decoration: line-through;
+color: gray;
+}
+</style>
+</head>
+<body>
+
+<h2>📋 Aplikasi Pengingat Tugas Siswa</h2>
+
+<label>Nama Tugas:
+<input type="text" id="tugas" placeholder="Contoh: Buat Laporan Prakarya">
+</label>
+
+<label>Mata Pelajaran:
+<input type="text" id="mapel" placeholder="Contoh: Prakarya">
+</label>
+
+<label>Deadline:
+<input type="date" id="deadline">
+</label>
+
+<button onclick="tambahTugas()">➕ Tambah Tugas</button>
+
+<table>
+<thead>
+<tr>
+<th>Nama Tugas</th>
+<th>Mata Pelajaran</th>
+<th>Deadline</th>
+<th>Status</th>
+<th>Aksi</th>
+</tr>
+</thead>
+<tbody id="daftarTugas"></tbody>
+</table>
+
+<script>
+const daftarTugas = JSON.parse(localStorage.getItem('tugas')) || [];
+
+function simpan() {
+localStorage.setItem('tugas', JSON.stringify(daftarTugas));
+}
+
+function tampilkan() {
+const tbody = document.getElementById('daftarTugas');
+tbody.innerHTML = "";
+daftarTugas.forEach((t, i) => {
+const row = document.createElement('tr');
+row.innerHTML = \`
+<td class="\${t.status === 'Selesai' ? 'selesai' : ''}">\${t.nama}</td>
+<td>\${t.mapel}</td>
+<td>\${t.deadline}</td>
+<td>\${t.status}</td>
+<td>
+<button onclick="tandaiSelesai(\${i})">✔️ Selesai</button>
+<button onclick="hapusTugas(\${i})">🗑️ Hapus</button>
+</td>
+\`;
+tbody.appendChild(row);
+});
+}
+
+function tambahTugas() {
+const nama = document.getElementById('tugas').value.trim();
+const mapel = document.getElementById('mapel').value.trim();
+const deadline = document.getElementById('deadline').value;
+if (nama && mapel && deadline) {
+daftarTugas.push({ nama, mapel, deadline, status: "Belum" });
+simpan();
+tampilkan();
+document.getElementById('tugas').value = "";
+document.getElementById('mapel').value = "";
+document.getElementById('deadline').value = "";
+} else {
+alert("Mohon lengkapi semua kolom!");
+}
+}
+
+function tandaiSelesai(i) {
+daftarTugas[i].status = "Selesai";
+simpan();
+tampilkan();
+}
+
+function hapusTugas(i) {
+if (confirm("Yakin ingin menghapus tugas ini?")) {
+daftarTugas.splice(i, 1);
+simpan();
+tampilkan();
+}
+}
+
+tampilkan();
+</script>
+
+</body>
+</html>
